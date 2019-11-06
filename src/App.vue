@@ -1,31 +1,45 @@
 <template>
   <div>
-    <input v-model="currentTodo" @keydown.enter="addTodo()" placeholder="Add a todo" />
+    <Header />
+    <md-field>
+      <md-icon>add</md-icon>
+      <label>Type here to add a To-do</label>
+      <md-input v-model="currentTodo" @keydown.enter="addTodo()" />
+    </md-field>
 
-    <ul class="todos">
-      <li v-for="todo in todos" :key="todo.id" v-bind:class="{'is-complete':todo.completed}">
-        <input type="checkbox" v-model="todo.completed" />
+    <md-list class="todos">
+      <md-list-item v-for="todo in todos" :key="todo.id">
+        <md-checkbox v-model="todo.completed" />
 
-        <span class="todo-label" @dblclick="editTodo(todo)" v-if="!todo.edit">{{ todo.label }}</span>
+        <span
+          class="todo-label"
+          @dblclick="editTodo(todo)"
+          v-if="!todo.edit"
+          v-bind:class="{'is-complete':todo.completed}"
+        >{{ todo.label }}</span>
 
-        <input
-          v-else
-          class="todo-edit"
-          type="text"
-          v-model="todo.label"
-          @blur="doneEdit(todo)"
-          @keyup.enter="doneEdit(todo)"
-          @keyup.escape="doneEdit(todo)"
-        />
+        <md-field v-else>
+          <md-input
+            v-model="todo.label"
+            @blur="doneEdit(todo)"
+            @keyup.enter="doneEdit(todo)"
+            @keyup.escape="doneEdit(todo)"
+          />
+        </md-field>
 
-        <button @click="removeTodo(todo)">Delete</button>
-      </li>
-    </ul>
+        <md-button class="md-raised" @click="removeTodo(todo)">Delete</md-button>
+      </md-list-item>
+    </md-list>
   </div>
 </template>
 
 <script>
+import Header from "./components/Header";
+
 export default {
+  components: {
+    Header
+  },
   data() {
     return {
       todos: [
@@ -77,6 +91,29 @@ export default {
 
 <style>
 .is-complete {
-  text-decoration: line-through;
+  text-decoration: line-through !important;
+  color: #d62196;
+}
+
+.md-button {
+  background-color: #39375b !important;
+}
+
+.md-checked {
+  text-decoration: line-through !important;
+  color: #000 !important;
+}
+
+.md-checkbox {
+  display: flex;
+}
+
+:root {
+  --md-theme-default-primary: #39375b !important;
+  --md-theme-default-accent: #d62196 !important;
+  --md-theme-default-primary-on-background: #e497cd !important;
+  --md-theme-default-accent-on-background: #d62196;
 }
 </style>
+
+
