@@ -144,6 +144,7 @@ export default {
 
 .ghost {
   border-left: 6px solid #d62196;
+  background-color: #39375b !important;
   opacity: 0.7;
 }
 
