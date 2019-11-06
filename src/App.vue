@@ -1,44 +1,48 @@
 <template>
-  <div>
+  <div class="todolist">
     <Header />
-    <md-field>
+    <md-field class="new-todo">
       <md-icon>add</md-icon>
       <label>Type here to add a To-do</label>
       <md-input v-model="currentTodo" @keydown.enter="addTodo()" />
     </md-field>
+    <md-list>
+      <draggable v-model="todos" ghost-class="ghost" @end="onEnd">
+        <transition-group type="transition" name="flip-list">
+          <md-list-item class="sortable" v-for="todo in todos" :key="todo.id">
+            <md-checkbox v-model="todo.completed" />
+            <span
+              class="todo-label"
+              @dblclick="editTodo(todo)"
+              v-if="!todo.edit"
+              v-bind:class="{'is-complete':todo.completed}"
+            >{{ todo.label }}</span>
 
-    <md-list class="todos">
-      <md-list-item v-for="todo in todos" :key="todo.id">
-        <md-checkbox v-model="todo.completed" />
+            <md-field v-else>
+              <md-input
+                v-model="todo.label"
+                @blur="doneEdit(todo)"
+                @keyup.enter="doneEdit(todo)"
+                @keyup.escape="doneEdit(todo)"
+              />
+            </md-field>
 
-        <span
-          class="todo-label"
-          @dblclick="editTodo(todo)"
-          v-if="!todo.edit"
-          v-bind:class="{'is-complete':todo.completed}"
-        >{{ todo.label }}</span>
-
-        <md-field v-else>
-          <md-input
-            v-model="todo.label"
-            @blur="doneEdit(todo)"
-            @keyup.enter="doneEdit(todo)"
-            @keyup.escape="doneEdit(todo)"
-          />
-        </md-field>
-
-        <md-button class="md-raised" @click="removeTodo(todo)">Delete</md-button>
-      </md-list-item>
+            <md-button class="md-raised" @click="removeTodo(todo)">Delete</md-button>
+          </md-list-item>
+        </transition-group>
+      </draggable>
     </md-list>
   </div>
 </template>
 
 <script>
 import Header from "./components/Header";
+import draggable from "vuedraggable";
 
 export default {
   components: {
-    Header
+    Header,
+    draggable
   },
   data() {
     return {
@@ -54,10 +58,18 @@ export default {
           label: "Bake cake",
           completed: true,
           edit: false
+        },
+        {
+          id: 3,
+          label: "Go for a run",
+          completed: false,
+          edit: false
         }
       ],
       currentTodo: "",
-      editedTodo: ""
+      editedTodo: "",
+      oldIndex: "",
+      newIndex: ""
     };
   },
   methods: {
@@ -82,6 +94,11 @@ export default {
     },
     doneEdit(todo) {
       todo.edit = false;
+    },
+    onEnd: function(evt) {
+      console.log(evt);
+      this.oldIndex = evt.oldIndex;
+      this.newIndex = evt.newIndex;
     }
   }
 };
@@ -113,6 +130,30 @@ export default {
   --md-theme-default-accent: #d62196 !important;
   --md-theme-default-primary-on-background: #e497cd !important;
   --md-theme-default-accent-on-background: #d62196;
+}
+
+.sortable {
+  cursor: move;
+  margin-bottom: 2px !important;
+  background-color: #232323 !important;
+}
+
+.flip-list-move {
+  transition: transform 0.5s;
+}
+
+.ghost {
+  border-left: 6px solid #d62196;
+  opacity: 0.7;
+}
+
+.todolist {
+  text-align: center;
+}
+
+.md-list {
+  width: 70%;
+  display: inline-block !important;
 }
 </style>
 
